@@ -41,7 +41,7 @@ public class Vector
 
     public static Vector operator -(Vector v1, Vector v2)
     {
-        if (v1.Size != v2.Size) throw new System.ArgumentException();
+        if (v1.Size != v2.Size) throw new ArgumentException();
         else
         {
             int[] arr = new int[v1.Size];

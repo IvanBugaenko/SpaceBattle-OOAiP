@@ -84,10 +84,10 @@ public class VectorTests
     }
 
     [Fact]
-    public void EqualsGood()
+    public void EqualsBad()
     {
         Vector A = new Vector(0, 1, 0, 0);
-        Vector B = new Vector(0, 0, 0, 0);
-        Assert.False(A.Equals(B));
+        int a = 1;
+        Assert.False(A.Equals(a));
     }
 }

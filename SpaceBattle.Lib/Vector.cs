@@ -15,14 +15,6 @@ public class Vector
         }
     }
 
-    public override string ToString()
-    {
-        string s = "Vector(";
-        for (int i = 0; i < Size - 1; i++) s += ($"{vector[i]}, ");
-        s += ($"{vector[Size - 1]})");
-        return s;
-    }
-
     public int this[int index]
     {
         get
@@ -38,7 +30,7 @@ public class Vector
 
     public static Vector operator +(Vector v1, Vector v2)
     {
-        if (v1.Size != v2.Size) throw new System.ArgumentException();
+        if (v1.Size != v2.Size) throw new ArgumentException();
         else
         {
             int[] arr = new int[v1.Size];
@@ -73,33 +65,16 @@ public class Vector
             if (v1[i] != v2[i]) return false;
         }
         return true;
-
     }
 
     public static bool operator !=(Vector v1, Vector v2) => !(v1 == v2);
 
-    public override bool Equals(object? obj)
-    {
-        return obj is Vector v && vector.SequenceEqual(v.vector);
-    }
+    public override bool Equals(object? obj) => obj is Vector v && vector.SequenceEqual(v.vector);
 
     public override int GetHashCode()
     {
         return HashCode.Combine(vector);
     }
 
-    public static bool operator <(Vector a, Vector b)
-    {
-        if (a == b) return false;
-        for (int i = 0; i < Math.Min(a.Size, b.Size); i++)
-            if (a[i] > b[i]) return false;
-        if (a.Size > b.Size) return false;
-        return true;
-    }
-
-    public static bool operator >(Vector v1, Vector v2)
-    {
-        return v2 < v1;
-    }
 }
 

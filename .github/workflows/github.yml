@@ -16,7 +16,7 @@ jobs:
     - name: Install dependencies
       run: dotnet restore ./SpaceBattle.Lib
     - name: Build
-      run: dotnet build .\SpaceBattle.Lib --no-restore
+      run: dotnet build ./SpaceBattle.Lib --no-restore
     - name: Test
       run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=TestResults/lcov.xml --no-build --verbosity normal
     - name: Create Test Coverage Badge
@@ -25,6 +25,6 @@ jobs:
       with:
         label: Unit Test Coverage
         color: brightgreen
-        path: .\SpaceBattle.Lib.Test\TestResults\lcov.xml 
+        path: ./SpaceBattle.Lib.Test/TestResults/lcov.xml 
     - name: Print code coverage
       run: echo "Code coverage percentage ${{steps.create_coverage_badge.outputs.percentage}}%"

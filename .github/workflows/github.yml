@@ -25,6 +25,6 @@ jobs:
       with:
         label: Unit Test Coverage
         color: brightgreen
-        path: SpaceBattle.Lib.Test/TestResults/opencover.xml
+        path: ./SpaceBattle.Lib.Test/TestResults/opencover.xml
     - name: Print code coverage
       run: echo "Code coverage percentage ${{steps.create_coverage_badge.outputs.percentage}}%"

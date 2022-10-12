@@ -15,7 +15,7 @@ public class VectorTests
     [Fact]
     public void SumErr()
     {
-        Vector A = new Vector(0, 0, 0, 0);
+        Vector A = new Vector(1, 0, 0, 0);
         Vector B = new Vector(1, 1);
         Assert.Throws<ArgumentException>(() => A + B);
     }

@@ -18,6 +18,9 @@ jobs:
     - name: Build
       run: dotnet build ./SpaceBattle.Lib --no-restore
     - name: Test
-      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=TestResults/ --no-build --verbosity normal
+      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=/SpaceBattle.Lib.Test/TestResults/coverage.opencover.xml --no-build --verbosity normal
     - name: Codecov
       uses: codecov/codecov-action@v3
+      with: 
+        files: ./SpaceBattle.Lib.Test/TestResults/coverage.opencover.xml
+        token: ${{secrets.CODECOV_TOKEN}}

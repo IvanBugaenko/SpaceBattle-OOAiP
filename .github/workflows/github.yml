@@ -19,12 +19,5 @@ jobs:
       run: dotnet build ./SpaceBattle.Lib --no-restore
     - name: Test
       run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=TestResults/ --no-build --verbosity normal
-    - name: Create Test Coverage Badge
-      uses: simon-k/dotnet-code-coverage-badge@v1.0.0
-      id: create_coverage_badge
-      with:
-        label: Unit Test Coverage
-        color: brightgreen
-        path: /SpaceBattle.Lib.Test/TestResults/coverage.opencover.xml
-    - name: Print code coverage
-      run: echo "Code coverage percentage ${{steps.create_coverage_badge.outputs.percentage}}%"
+    - name: Codecov
+      uses: codecov/codecov-action@v3

@@ -80,7 +80,8 @@ public class VectorTests
     public void GetHashGood()
     {
         Vector A = new Vector(0, 1, 0, 0);
-        Assert.True(A.GetHashCode() is int);
+        Vector B = new Vector(0, 0, 0, 0);
+        Assert.True(A.GetHashCode() != B.GetHashCode());
     }
 
     [Fact]

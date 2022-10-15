@@ -1,27 +1,26 @@
-name: .NET
-
+name: dotnet package
+ 
 on: [push]
-
+ 
 jobs:
-build:
-  runs-on: ubuntu-latest
-
-  steps:
-  - uses: actions/checkout@v3 
-  - name: Setup .NET
-  uses: actions/setup-dotnet@v2
-  with:
-    dotnet-version: 6.0.x
-  - name: Restore dependencies
-    run: dotnet restore
-  - name: Build
-    run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
-
-  - name: Test
-    run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=TestResults/coverage.opencover.xml
-
-  - name: Codecov
-    uses: codecov/codecov-action@v3
-    with:
-      token: ${{ secrets.CODECOV_TOKEN }}
-      files: ./SpaceBattle.Lib.Test/TestResults/coverage.opencover.xml
+  build:
+ 
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ['6.0.x' ]
+ 
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Install dependencies
+        run: dotnet restore ./SpaceBattle.Lib
+      - name: Build
+        run: dotnet build ./SpaceBattle.Lib --configuration Release --no-restore
+      - name: Test
+        run: dotnet test -p:CollectCoverage=true -p:CoverletOutput=../coverage/ -p:CoverletOutputFormat=opencover --no-build --verbosity normal ./SpaceBattle.Lib.Test
+      - name: Codecov
+        uses: codecov/codecov-action@v3

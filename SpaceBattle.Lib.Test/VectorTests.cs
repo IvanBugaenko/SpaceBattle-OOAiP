@@ -80,7 +80,15 @@ public class VectorTests
     public void GetHashGood()
     {
         Vector A = new Vector(0, 1, 0, 0);
-        Vector B = new Vector(0, 0, 0, 0);
+        Vector B = new Vector(0, 1, 0, 0);
+        Assert.True(A.GetHashCode() == B.GetHashCode());
+    }
+
+    [Fact]
+    public void GetHashBad()
+    {
+        Vector A = new Vector(0, 1, 7, 0);
+        Vector B = new Vector(0, 1, 0, 0);
         Assert.True(A.GetHashCode() != B.GetHashCode());
     }
 
@@ -90,5 +98,11 @@ public class VectorTests
         Vector A = new Vector(0, 1, 0, 0);
         int a = 1;
         Assert.False(A.Equals(a));
+    }
+
+    [Fact]
+    public void ZeroLen()
+    {
+        Assert.Throws<Exception>(() => new Vector());
     }
 }

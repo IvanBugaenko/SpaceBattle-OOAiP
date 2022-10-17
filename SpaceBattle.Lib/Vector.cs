@@ -2,11 +2,12 @@ namespace SpaceBattle.Lib;
 
 public class Vector
 {
-    public int[] vector = { 0 };
+    public int[] vector;
 
     public Vector(params int[] nums)
     {
         int size = nums.Length;
+        if (size == 0) throw new Exception();
         vector = new int[size];
         for (int i = 0; i < size; i++)
         {
@@ -74,7 +75,7 @@ public class Vector
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(vector);
+        return String.Join("", vector.Select(x => x.ToString())).GetHashCode();
     }
 
 }

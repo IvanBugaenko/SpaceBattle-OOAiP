@@ -3,17 +3,18 @@ namespace SpaceBattle.Lib;
 public class Vector
 {
     public int[] vector = { 0 };
-    public int Size = 0;
 
     public Vector(params int[] nums)
     {
-        Size = nums.Length;
-        vector = new int[Size];
-        for (int i = 0; i < Size; i++)
+        int size = nums.Length;
+        vector = new int[size];
+        for (int i = 0; i < size; i++)
         {
             vector[i] = nums[i];
         }
     }
+
+    public int Size => vector.Length;
 
     public int this[int index]
     {

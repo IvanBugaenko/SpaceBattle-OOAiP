@@ -103,6 +103,6 @@ public class VectorTests
     [Fact]
     public void ZeroLen()
     {
-        Assert.Throws<Exception>(() => new Vector());
+        Assert.Throws<ArgumentException>(() => new Vector());
     }
 }

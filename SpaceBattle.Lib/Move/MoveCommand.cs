@@ -9,7 +9,6 @@ public class MoveCommand: ICommand
     }
      public void Execute()
      {
-        // moving.SetCoords(moving.GetCoords() + moving.GetSpeed());
         moving.Pos += moving.Speed;
      }
 }

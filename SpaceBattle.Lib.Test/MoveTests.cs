@@ -15,6 +15,7 @@ public class MoveTests
         c.Execute();
 
         m.VerifySet(a => a.Pos = new Vector(5, 8), Times.Once);
+        m.VerifyAll();
     }
 
     [Fact]

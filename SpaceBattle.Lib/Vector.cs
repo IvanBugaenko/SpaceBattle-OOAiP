@@ -7,7 +7,7 @@ public class Vector
     public Vector(params int[] nums)
     {
         int size = nums.Length;
-        if (size == 0) throw new Exception();
+        if (size == 0) throw new ArgumentException();
         vector = new int[size];
         for (int i = 0; i < size; i++)
         {
@@ -79,4 +79,3 @@ public class Vector
     }
 
 }
-

@@ -38,8 +38,3 @@ public class MyAngle
 
     public override int GetHashCode() => (this.n.ToString() + this.m.ToString()).GetHashCode();
 }
-
-
-//! ваняяяя
-//! -1/3 поидее равно 1/-3
-//! потом реализуй

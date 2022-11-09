@@ -5,7 +5,7 @@ namespace SpaceBattle.Lib.Test;
 public class RotateTests
 {
     [Fact]
-    public void RotateGood()
+    public void Successful_Rotate()
     {
         var m = new Mock<IRotatable>();
         m.Setup(a => a.Angle).Returns(new MyAngle(45, 1)).Verifiable();
@@ -18,7 +18,7 @@ public class RotateTests
     }
 
     [Fact]
-    public void SetAngleErr()
+    public void SetAngleFailed()
     {
         Mock<IRotatable> m = new Mock<IRotatable>();
         m.SetupProperty(m => m.Angle, new MyAngle(45, 1));
@@ -30,7 +30,7 @@ public class RotateTests
     }
 
     [Fact]
-    public void GetAngleSpeedErr()
+    public void GetAngleSpeedFailed()
     {
         Mock<IRotatable> m = new Mock<IRotatable>();
         m.SetupProperty(m => m.Angle, new MyAngle(45, 1));
@@ -41,7 +41,7 @@ public class RotateTests
     }
 
     [Fact]
-    public void GetAngleErr()
+    public void GetAngleFailed()
     {
         Mock<IRotatable> m = new Mock<IRotatable>();
         m.SetupProperty(m => m.Angle, new MyAngle(45, 1));

@@ -6,7 +6,7 @@ public class MyAngleTests
 {
 
     [Fact]
-    public void SubstractionGood()
+    public void Successful_Angles_Addition()
     {
         MyAngle a = new MyAngle(30, 1);
         MyAngle b = new MyAngle(45, 1);
@@ -15,7 +15,7 @@ public class MyAngleTests
     }
 
     [Fact]
-    public void ComparisonBad2()
+    public void Failed_Angle_Equality()
     {
         MyAngle a = new MyAngle(30, 1);
         MyAngle b = new MyAngle(45, 1);
@@ -23,7 +23,7 @@ public class MyAngleTests
     }
 
     [Fact]
-    public void ComparisonGood()
+    public void Successful_Angle_Equality()
     {
         MyAngle a = new MyAngle(-30, 1);
         MyAngle b = new MyAngle(90, -3);
@@ -31,7 +31,7 @@ public class MyAngleTests
     }
 
     [Fact]
-    public void NotComparisonGood()
+    public void Successful_Angle_Inequality()
     {
         MyAngle a = new MyAngle(30, 1);
         MyAngle b = new MyAngle(45, 1);
@@ -39,7 +39,7 @@ public class MyAngleTests
     }
 
     [Fact]
-    public void GetHashGood()
+    public void Successful_GetHashGood()
     {
         MyAngle a = new MyAngle(-30, -1);
         MyAngle b = new MyAngle(90, 3);
@@ -47,7 +47,7 @@ public class MyAngleTests
     }
 
     [Fact]
-    public void EqualsBad()
+    public void Failed_Angle_EqualsMethod()
     {
         MyAngle a = new MyAngle(-30, -1);
         int b = 1;
@@ -55,8 +55,8 @@ public class MyAngleTests
     }
 
     [Fact]
-    public void ZeroException()
+    public void ZeroDenominator_In_Angle()
     {
-        Assert.Throws<Exception>(()=> new MyAngle(1,0));
+        Assert.Throws<ArgumentException>(()=> new MyAngle(1,0));
     }
 }

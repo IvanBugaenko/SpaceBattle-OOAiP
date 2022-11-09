@@ -11,7 +11,7 @@ public class MyAngle
 
     public MyAngle(int n, int m)
     {
-        if (m == 0) throw new Exception();
+        if (m == 0) throw new ArgumentException();
         if (n >= 0 && m < 0 || n <= 0 && m < 0) 
         {
             m *= -1;

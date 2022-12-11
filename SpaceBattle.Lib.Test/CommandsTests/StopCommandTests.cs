@@ -42,7 +42,7 @@ public class StopMoveCommandTests
         stopable.SetupGet(a => a.Target).Returns(obj.Object).Verifiable();
         stopable.SetupGet(a => a.Properties).Returns(new List<string>() { "Speed" }).Verifiable();
 
-        ICommand stopMove = new StopMoveCommand(stopable.Object);
+        ICommand stopMove = new StopCommand(stopable.Object);
 
         stopMove.Execute();
 
@@ -57,7 +57,7 @@ public class StopMoveCommandTests
         stopable.SetupGet(a => a.Target).Throws<Exception>().Verifiable();
         stopable.SetupGet(a => a.Properties).Returns(new List<string>() { "Speed" }).Verifiable();
 
-        ICommand stopMove = new StopMoveCommand(stopable.Object);
+        ICommand stopMove = new StopCommand(stopable.Object);
 
         Assert.Throws<Exception>(() => stopMove.Execute());
     }
@@ -71,7 +71,7 @@ public class StopMoveCommandTests
         stopable.SetupGet(a => a.Target).Returns(obj.Object).Verifiable();
         stopable.SetupGet(a => a.Properties).Throws<Exception>().Verifiable();
 
-        ICommand stopMove = new StopMoveCommand(stopable.Object);
+        ICommand stopMove = new StopCommand(stopable.Object);
 
         Assert.Throws<Exception>(() => stopMove.Execute());
     }

@@ -2,10 +2,10 @@ using Hwdtech;
 
 namespace SpaceBattle.Lib;
 
-public class StopMoveCommand : ICommand
+public class StopCommand : ICommand
 {
     private IStopable obj;
-    public StopMoveCommand(IStopable obj)
+    public StopCommand(IStopable obj)
     {
         this.obj = obj;
     }

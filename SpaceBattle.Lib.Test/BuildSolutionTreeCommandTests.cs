@@ -22,7 +22,7 @@ public class SolutionTreeTests
     [Fact]
     public void SuccesfulBuildSolutionTree()
     {
-        var path = @"..\..\..\file.txt";
+        var path = "../../../file.txt";
 
         var buildCommand = new BuildSolutionTreeCommand(path);
 

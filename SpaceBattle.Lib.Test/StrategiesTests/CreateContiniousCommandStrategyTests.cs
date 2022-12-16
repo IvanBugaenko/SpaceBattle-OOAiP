@@ -33,7 +33,7 @@ public class CreateContiniousCommandStrategyTests
         IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "CreateMacroCommand", (object[] args) => mockStrategyReturnsMacroCommand.Object.RunStrategy(args)).Execute();
         IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "MyName", (object[] args) => mockStrategyReturnsCommand.Object.RunStrategy(args)).Execute();
 
-        var strategy = new CreateContiniousCommandStrategy();
+        var strategy = new CreatePartCommandStrategy();
         
         strategy.RunStrategy("MyName", mockIUObj.Object);
         

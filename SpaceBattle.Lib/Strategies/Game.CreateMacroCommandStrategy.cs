@@ -1,10 +1,10 @@
 namespace SpaceBattle.Lib;
 
-public class CreateMacroCommand : IStrategy
+public class CreateMacroCommandStrategy : IStrategy
 {
 
     public object RunStrategy(params object[] args)
     {
-        return new MacroCommand((IEnumerable<ICommand>)args[0]);
+        return new MacroCommand((IEnumerable<ICommand>) args[0]);
     }
 }

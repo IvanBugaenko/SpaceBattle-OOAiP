@@ -7,13 +7,14 @@ namespace SpaceBattle.Lib.Test;
 
 public class ExceptionHandlerStrategyTests
 {
-    [Fact]
-    public void SuccesfulGetPropertyStrategy()
+    Mock<IHandler> mockHandler = new Mock<IHandler>();
+    Mock<IStrategy> mockStrategyReturnsTree = new Mock<IStrategy>();
+
+    public ExceptionHandlerStrategyTests()
     {
         new InitScopeBasedIoCImplementationCommand().Execute();
         IoC.Resolve<Hwdtech.ICommand>("Scopes.Current.Set", IoC.Resolve<object>("Scopes.New", IoC.Resolve<object>("Scopes.Root"))).Execute();
 
-        var mockHandler = new Mock<IHandler>();
         mockHandler.Setup(m => m.Handle()).Verifiable();
 
         var tree_handler = new Dictionary<object, IDictionary<object, IHandler>>(){
@@ -29,23 +30,54 @@ public class ExceptionHandlerStrategyTests
             }
         };
 
-        var mockStrategyReturnsTree = new Mock<IStrategy>();
         mockStrategyReturnsTree.Setup(m => m.RunStrategy()).Returns(tree_handler).Verifiable();
 
         IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.GetExceptionTree", (object[] args) => mockStrategyReturnsTree.Object.RunStrategy(args)).Execute();
+    }
+
+    [Fact]
+    public void SuccesfulGetHandleForCommandAndException()
+    {
         var strategy = new FindExceptionHandlerStrategy();
 
-        var handler1 = (IHandler) strategy.RunStrategy(typeof(MoveCommand), typeof(ArgumentException));
-        handler1.Handle();
+        var handler = (IHandler) strategy.RunStrategy(typeof(MoveCommand), typeof(ArgumentException));
+        handler.Handle();
 
-        var handler2 = (IHandler) strategy.RunStrategy(typeof(MoveCommand), typeof(FormatException));
-        handler2.Handle();
+        mockHandler.VerifyAll();
+        mockStrategyReturnsTree.VerifyAll();
+    }
 
-        var handler3 = (IHandler) strategy.RunStrategy(typeof(RotateCommand), typeof(FormatException));
-        handler3.Handle();
+    [Fact]
+    public void SuccesfulGetHandleForCommandAndWrongException()
+    {
+        var strategy = new FindExceptionHandlerStrategy();
 
-        var handler4 = (IHandler) strategy.RunStrategy(typeof(RotateCommand), typeof(ArgumentException));
-        handler4.Handle();
+        var handler = (IHandler) strategy.RunStrategy(typeof(MoveCommand), typeof(FormatException));
+        handler.Handle();
+        
+        mockHandler.VerifyAll();
+        mockStrategyReturnsTree.VerifyAll();
+    }
+
+    [Fact]
+    public void SuccesfulGetHandleForWrongCommandAndWrongException()
+    {
+        var strategy = new FindExceptionHandlerStrategy();
+
+        var handler = (IHandler) strategy.RunStrategy(typeof(RotateCommand), typeof(FormatException));
+        handler.Handle();
+        
+        mockHandler.VerifyAll();
+        mockStrategyReturnsTree.VerifyAll();
+    }
+
+    [Fact]
+    public void SuccesfulGetHandleForWrongCommandAndException()
+    {
+        var strategy = new FindExceptionHandlerStrategy();
+
+        var handler = (IHandler) strategy.RunStrategy(typeof(RotateCommand), typeof(ArgumentException));
+        handler.Handle();
         
         mockHandler.VerifyAll();
         mockStrategyReturnsTree.VerifyAll();

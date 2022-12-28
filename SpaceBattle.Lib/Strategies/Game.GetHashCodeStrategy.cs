@@ -1,5 +1,3 @@
-using Hwdtech;
-
 namespace SpaceBattle.Lib;
 
 public class GetHashCodeStrategy : IStrategy
@@ -10,7 +8,7 @@ public class GetHashCodeStrategy : IStrategy
 
         unchecked
         {
-            int hashcode = (int) 232582681769;
+            int hashcode = (int)232582681769;
             list.Select(t => t.GetHashCode()).OrderBy(t => t).ToList().ForEach(n => hashcode = (hashcode * 7302013) ^ n);
             return hashcode;
         }

@@ -12,47 +12,55 @@ public class DetectCollisionCommandTests
         new InitScopeBasedIoCImplementationCommand().Execute();
 
         IoC.Resolve<Hwdtech.ICommand>("Scopes.Current.Set", IoC.Resolve<object>("Scopes.New", IoC.Resolve<object>("Scopes.Root"))).Execute();
+
+        var tree = new Dictionary<int, object>()
+        {
+            {2, new Dictionary<int, object>()}
+        };
+
+        var mockStrategyReturnsTree = new Mock<IStrategy>();
+        mockStrategyReturnsTree.Setup(m => m.RunStrategy()).Returns(tree);
+
+        var mockStrategyReturnsList = new Mock<IStrategy>();
+        mockStrategyReturnsList.Setup(m => m.RunStrategy(It.IsAny<IUObject>())).Returns(new List<int>());
+
+        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.GetSolutionTree", (object[] args) => mockStrategyReturnsTree.Object.RunStrategy(args)).Execute();
+        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.IUObject.UnionPropertiesForCollision", (object[] args) => mockStrategyReturnsList.Object.RunStrategy(args)).Execute();
     }
 
     [Fact]
     public void SuccesfulDetectCollisionCommandTests()
     {
-        new InitScopeBasedIoCImplementationCommand().Execute();
-        IoC.Resolve<Hwdtech.ICommand>("Scopes.Current.Set", IoC.Resolve<object>("Scopes.New", IoC.Resolve<object>("Scopes.Root"))).Execute();
-
         var obj1 = new Mock<IUObject>();
         var obj2 = new Mock<IUObject>();
 
-        var mockCommand = new Mock<SpaceBattle.Lib.ICommand>();
-        mockCommand.Setup(x => x.Execute());
+        var cmd = new Mock<ICommand>();
+        cmd.Setup(m => m.Execute()).Verifiable();
 
-        var mockStrategyReturnsCommand = new Mock<IStrategy>();
-        mockStrategyReturnsCommand.Setup(x => x.RunStrategy(obj1.Object, obj2.Object)).Returns(mockCommand.Object).Verifiable();
+        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.PrepareDataToCollision", (object[] args) => new List<int>() { 2 }).Execute();
+        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Collision", (object[] args) => cmd.Object).Execute();
 
-        var mockDict = new Mock<IDictionary<int, object>>();
-        mockDict.Setup(d => d.Keys).Returns(new List<int>(){1});
+        var detect = new DetectCollisionCommand(obj1.Object, obj2.Object);
+        detect.Execute();
 
-        var mockStrategyReturnsTree = new Mock<IStrategy>();
-        mockStrategyReturnsTree.Setup(x => x.RunStrategy()).Returns(mockDict.Object).Verifiable();
+        cmd.VerifyAll();
+    }
 
-        var mockStrategyReturnsList = new Mock<IStrategy>();
-        mockStrategyReturnsList.Setup(x => x.RunStrategy(It.IsAny<object[]>())).Returns(new List<int>()).Verifiable();
+    [Fact]
+    public void NotSuccesfulDetectCollisionCommandTests()
+    {
+        var obj1 = new Mock<IUObject>();
+        var obj2 = new Mock<IUObject>();
 
-        var mockStrategyReturnsCorrentList = new Mock<IStrategy>();
-        mockStrategyReturnsCorrentList.Setup(x => x.RunStrategy(It.IsAny<object[]>())).Returns(new List<int>()).Verifiable();
+        var cmd = new Mock<ICommand>();
+        cmd.Setup(m => m.Execute()).Verifiable();
 
-        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.GetSolutionTree", (object[] args) => mockStrategyReturnsTree.Object.RunStrategy(args)).Execute();
-        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.IUObject.UnionPropertiesForCollision", (object[] args) => mockStrategyReturnsList.Object.RunStrategy(args)).Execute();
-        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Collision", (object[] args) => mockStrategyReturnsCommand.Object.RunStrategy(args)).Execute();
-        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.PrepareDataToCollision", (object[] args) => mockStrategyReturnsCorrentList.Object.RunStrategy(args)).Execute();
+        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.PrepareDataToCollision", (object[] args) => new List<int>() { 3 }).Execute();
+        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Collision", (object[] args) => cmd.Object).Execute();
 
-        ICommand IsCollision = new DetectCollisionCommand(obj1.Object, obj2.Object);
+        var detect = new DetectCollisionCommand(obj1.Object, obj2.Object);
+        detect.Execute();
 
-        IsCollision.Execute();
-        
-        mockStrategyReturnsCorrentList.VerifyAll();
-        mockStrategyReturnsCommand.VerifyAll();
-        mockStrategyReturnsList.VerifyAll();
-        mockStrategyReturnsTree.VerifyAll();
+        cmd.Verify(c => c.Execute(), Times.Never);
     }
 }

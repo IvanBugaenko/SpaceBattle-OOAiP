@@ -2,7 +2,7 @@ using Hwdtech;
 
 namespace SpaceBattle.Lib;
 
-public class DetectCollisionCommand: ICommand
+public class DetectCollisionCommand : ICommand
 {
     private IUObject obj1, obj2;
     public DetectCollisionCommand(IUObject obj1, IUObject obj2)
@@ -20,8 +20,12 @@ public class DetectCollisionCommand: ICommand
 
         var parametrs = IoC.Resolve<List<int>>("Game.PrepareDataToCollision", property1, property2);
 
-        parametrs.ForEach(num => tree = (IDictionary<int, object>) tree[num]);
+        foreach (var i in parametrs)
+        {
+            if (!tree.TryGetValue(i, out object? value)) return;
+            tree = (IDictionary<int, object>)value;
+        }
 
-        if (tree.Keys.First() == 1) IoC.Resolve<ICommand>("Game.Collision", obj1, obj2).Execute();
+        IoC.Resolve<ICommand>("Game.Collision", obj1, obj2).Execute();
     }
 }

@@ -5,9 +5,9 @@ using Moq;
 
 namespace SpaceBattle.Lib.Test;
 
-public class ExceptionHandlerStrategyTests
+public class AddExceptionHandlerStrategyTests
 {
-    public ExceptionHandlerStrategyTests()
+    public AddExceptionHandlerStrategyTests()
     {
         new InitScopeBasedIoCImplementationCommand().Execute();
 

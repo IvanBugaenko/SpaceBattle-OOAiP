@@ -4,10 +4,14 @@ public class ServerThread
 {
     private Thread thread;
     private Action strategy;
-    private bool stop;
+    private bool stop = false;
 
-    public ServerThread()
+    private IReciver queue;
+
+    public ServerThread(IReciver queue)
     {
+        this.queue = queue;
+
         strategy = () => 
         {
             HandleCommand();
@@ -19,10 +23,35 @@ public class ServerThread
         });
     }
 
-    internal void HandleCommand()
+    public Thread GetInnerThread()
     {
-
+        return this.thread;
     }
 
+    internal void HandleCommand()
+    {
+        try 
+        {
+            this.queue.Recieve().Execute();
+        }
+        catch
+        {
+            throw new Exception();
+        }
+    }
 
+    internal void UpdateBehaviour(Action newBehaviour)
+    {
+        this.strategy = newBehaviour;
+    }
+
+    internal void StopServerThread()
+    {
+        this.stop = true;
+    }
+
+    public void StartServerThread()
+    {
+        thread.Start();
+    }
 }

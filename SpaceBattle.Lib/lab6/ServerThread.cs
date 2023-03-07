@@ -1,3 +1,5 @@
+using Hwdtech;
+
 namespace SpaceBattle.Lib;
 
 public class ServerThread
@@ -5,7 +7,6 @@ public class ServerThread
     private Thread thread;
     private Action strategy;
     private bool stop = false;
-
     private IReciver queue;
 
     public ServerThread(IReciver queue)
@@ -23,20 +24,16 @@ public class ServerThread
         });
     }
 
-    public Thread GetInnerThread()
-    {
-        return this.thread;
-    }
-
     internal void HandleCommand()
     {
+        var cmd = this.queue.Recieve();
         try 
         {
-            this.queue.Recieve().Execute();
+            cmd.Execute();
         }
-        catch
+        catch (Exception e)
         {
-            throw new Exception();
+            IoC.Resolve<IHandler>("GetExceptionHandler", new List<Type>{cmd.GetType(), e.GetType()});
         }
     }
 
@@ -53,5 +50,25 @@ public class ServerThread
     public void StartServerThread()
     {
         thread.Start();
+    }
+
+    public override int GetHashCode()
+    {
+        return this.thread.GetHashCode();
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Thread th && th == this.thread;
+    }
+
+    public static bool operator ==(ServerThread st, Thread th)
+    {
+        return st.thread == th;
+    }
+
+    public static bool operator !=(ServerThread st, Thread th)
+    {
+        return !(st == th);
     }
 }

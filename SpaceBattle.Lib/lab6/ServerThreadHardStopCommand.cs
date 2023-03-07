@@ -11,7 +11,7 @@ public class ServerThreadHardStopCommand: ICommand
 
     public void Execute()
     {
-        if (Thread.CurrentThread == serverThread.GetInnerThread())
+        if (serverThread == Thread.CurrentThread)
         {
             serverThread.StopServerThread();
         }
@@ -21,3 +21,4 @@ public class ServerThreadHardStopCommand: ICommand
         }
     }
 }
+

@@ -7,9 +7,9 @@ public class ServerThread
     private Thread thread;
     private Action strategy;
     private bool stop = false;
-    private IReciver queue;
+    private IReceiver queue;
 
-    public ServerThread(IReciver queue)
+    public ServerThread(IReceiver queue)
     {
         this.queue = queue;
 
@@ -20,13 +20,13 @@ public class ServerThread
 
         this.thread = new Thread(() =>
         {
-            while (!stop) strategy();
+            while (!stop) strategy(); // -> () => {HandleCommand(); SoftStop.Execute()}
         });
     }
 
     internal void HandleCommand()
     {
-        var cmd = this.queue.Recieve();
+        var cmd = this.queue.Receive();
         try 
         {
             cmd.Execute();

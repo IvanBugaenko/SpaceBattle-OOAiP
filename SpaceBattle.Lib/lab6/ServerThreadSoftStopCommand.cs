@@ -20,5 +20,10 @@ public class ServerThreadSoftStopCommand: ICommand
             serverThread.StopServerThread();
             action();
         }
+
+        if (serverThread == Thread.CurrentThread)
+        {
+            
+        }
     }
 }

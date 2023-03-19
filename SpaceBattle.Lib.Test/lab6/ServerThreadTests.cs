@@ -7,7 +7,7 @@ namespace SpaceBattle.Lib.Test;
 
 public class ServerThreadTests
 {
-    Mock<ICommand> cmd = new Mock<ICommand>();
+    Mock<ICommand> emptyCmd = new Mock<ICommand>();
     ConcurrentDictionary<int, ServerThread> mapServerThreads = new ConcurrentDictionary<int, ServerThread>();
     ConcurrentDictionary<int, ISender> mapServerThreadsSenders = new ConcurrentDictionary<int, ISender>();
 
@@ -19,13 +19,12 @@ public class ServerThreadTests
         IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "GetServrerThreads", (object[] args) => mapServerThreads).Execute();
         IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "GetServrerThreadsSenders", (object[] args) => mapServerThreadsSenders).Execute();
 
-        cmd.Setup(c => c.Execute()).Callback(() => {});
+        emptyCmd.Setup(c => c.Execute()).Callback(() => {});
     }
 
     [Fact]
     public void SuccessfulCreateAndStartServerThread()
     {
-        var cv = new AutoResetEvent(true);
         bool succStart = false;
 
         var createAndStartServerThreadStrategy = new CreateAndStartServerThreadStrategy();
@@ -34,8 +33,7 @@ public class ServerThreadTests
 
         var c = (ICommand)createAndStartServerThreadStrategy.RunStrategy(key, () => {
             succStart = true;
-            cv.WaitOne();
-
+            new AutoResetEvent(true).WaitOne();
         });
 
         c.Execute();

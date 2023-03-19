@@ -20,7 +20,7 @@ public class ServerThread
 
         this.thread = new Thread(() =>
         {
-            while (!stop) strategy(); // -> () => {HandleCommand(); SoftStop.Execute()}
+            while (!stop) strategy();
         });
     }
 
@@ -33,7 +33,7 @@ public class ServerThread
         }
         catch (Exception e)
         {
-            IoC.Resolve<IHandler>("GetExceptionHandler", new List<Type>{cmd.GetType(), e.GetType()});
+            IoC.Resolve<IHandler>("GetExceptionHandler", new List<Type>{cmd.GetType(), e.GetType()}).Handle();
         }
     }
 
@@ -70,5 +70,10 @@ public class ServerThread
     public static bool operator !=(ServerThread st, Thread th)
     {
         return !(st == th);
+    }
+
+    internal bool IsReceiverEmpty()
+    {
+        return this.queue.isEmpty();
     }
 }

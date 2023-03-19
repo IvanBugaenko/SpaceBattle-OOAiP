@@ -15,7 +15,7 @@ public class HardStopServerThreadStrategy : IStrategy
             action = (Action)args[1];
         }
 
-        var cmd = new ServerThreadHardStopCommand(id);
+        var cmd = new HardStopServerThreadCommand(id);
 
         return new SendCommand(id, new ActionCommand(() => 
         {

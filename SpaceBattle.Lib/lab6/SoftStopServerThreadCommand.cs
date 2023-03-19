@@ -2,12 +2,12 @@ using Hwdtech;
 using System.Collections.Concurrent;
 namespace SpaceBattle.Lib;
 
-public class ServerThreadSoftStopCommand: ICommand
+public class SoftStopServerThreadCommand: ICommand
 {
     private ServerThread serverThread;
     private Action action;
 
-    public ServerThreadSoftStopCommand(int id, Action action)
+    public SoftStopServerThreadCommand(int id, Action action)
     {
         ServerThread ?serverThread;
 

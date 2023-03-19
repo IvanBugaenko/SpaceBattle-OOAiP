@@ -11,11 +11,6 @@ public class ISenderAdapter : ISender
         this.queue = queue;
     }
 
-    public bool isEmpty()
-    {
-        return this.queue.Count == 0;
-    }
-
     public void Send(ICommand message)
     {
         this.queue.Add(message);

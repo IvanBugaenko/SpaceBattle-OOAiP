@@ -3,11 +3,11 @@ using System.Collections.Concurrent;
 
 namespace SpaceBattle.Lib;
 
-public class ServerThreadHardStopCommand: ICommand
+public class HardStopServerThreadCommand: ICommand
 {
     private ServerThread serverThread;
 
-    public ServerThreadHardStopCommand(int id)
+    public HardStopServerThreadCommand(int id)
     {
         ServerThread ?serverThread;
 
@@ -20,7 +20,8 @@ public class ServerThreadHardStopCommand: ICommand
 
     public void Execute()
     {
-        if (serverThread == Thread.CurrentThread)
+        var t = Thread.CurrentThread;
+        if (serverThread == t)
         {
             serverThread.StopServerThread();
         }
@@ -28,6 +29,6 @@ public class ServerThreadHardStopCommand: ICommand
         {
             throw new Exception();
         }
+        serverThread.StopServerThread();
     }
 }
-

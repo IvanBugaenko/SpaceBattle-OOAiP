@@ -15,6 +15,7 @@ public class CreateAndStartServerThreadCommand: ICommand
     public void Execute()
     {
         var queue = new BlockingCollection<ICommand>();
+        
         var sender = new ISenderAdapter(queue);
         var threadsSenders = IoC.Resolve<ConcurrentDictionary<int, ISender>>("GetServrerThreadsSenders");
         threadsSenders.TryAdd(this.id, sender);

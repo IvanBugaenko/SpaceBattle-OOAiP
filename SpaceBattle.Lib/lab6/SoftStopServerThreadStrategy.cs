@@ -14,7 +14,7 @@ public class SoftStopServerThreadStrategy : IStrategy
             action = (Action)args[1];
         }
 
-        var cmd = new ServerThreadSoftStopCommand(id, action);
+        var cmd = new SoftStopServerThreadCommand(id, action);
 
         return new SendCommand(id, new ActionCommand(() => {
             cmd.Execute();

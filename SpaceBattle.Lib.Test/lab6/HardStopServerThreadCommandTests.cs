@@ -38,8 +38,8 @@ public class HardStopServerThreadCommandTests
 
         var hardStopStrategy = new HardStopServerThreadStrategy();
 
-        var hs2 = (ICommand)hardStopStrategy.RunStrategy(key);
+        var hs1 = (ICommand)hardStopStrategy.RunStrategy(key);
 
-        hs2.Execute();
+        hs1.Execute();
     }
 }

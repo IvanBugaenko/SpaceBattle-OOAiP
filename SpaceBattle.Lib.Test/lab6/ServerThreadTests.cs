@@ -2,28 +2,21 @@ using Hwdtech;
 using Hwdtech.Ioc;
 using System.Collections.Concurrent;
 using Moq;
-using Xunit.Abstractions;
 
 namespace SpaceBattle.Lib.Test;
 
 public class ServerThreadTests
 {
-    Mock<ICommand> emptyCmd = new Mock<ICommand>();
     ConcurrentDictionary<int, ServerThread> mapServerThreads = new ConcurrentDictionary<int, ServerThread>();
     ConcurrentDictionary<int, ISender> mapServerThreadsSenders = new ConcurrentDictionary<int, ISender>();
 
-    private readonly ITestOutputHelper output;
-
-    public ServerThreadTests(ITestOutputHelper output)
+    public ServerThreadTests()
     {
-        this.output = output;
         new InitScopeBasedIoCImplementationCommand().Execute();
         IoC.Resolve<Hwdtech.ICommand>("Scopes.Current.Set", IoC.Resolve<object>("Scopes.New", IoC.Resolve<object>("Scopes.Root"))).Execute();
 
         IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "GetServrerThreads", (object[] args) => mapServerThreads).Execute();
-        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "GetServrerThreadsSenders", (object[] args) => mapServerThreadsSenders).Execute();
-
-        emptyCmd.Setup(c => c.Execute()).Callback(() => {});
+        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "GetServrerThreadsSenders", (object[] args) => mapServerThreadsSenders).Execute();;
     }
 
     [Fact]
@@ -32,34 +25,34 @@ public class ServerThreadTests
         var isActive = false;
 
         var key = 1;
-        
-        var mre = new ManualResetEvent(false);
 
-        IStrategy createAndStartSTStrategy = new CreateAndStartServerThreadStrategy();
-        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key);
+        var are = new AutoResetEvent(true);
+
+        var createAndStartSTStrategy = new CreateAndStartServerThreadStrategy();
+        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key, () =>
+        {
+            are.WaitOne();
+        });
         c.Execute();
 
         var sendStrategy = new SendCommandStrategy();
-
         var c1 = (ICommand)sendStrategy.RunStrategy(key, new ActionCommand(() =>
         {
             isActive = true;
-            mre.Set();
+            are.WaitOne();
         }));
-
         c1.Execute();
+        are.Set();
 
-        mre.WaitOne();
+        Thread.Sleep(1000);
 
         Assert.True(isActive);
         Assert.True(mapServerThreads.TryGetValue(key, out ServerThread? st));
         Assert.True(mapServerThreadsSenders.TryGetValue(key, out ISender? s));
 
         var hardStopStrategy = new HardStopServerThreadStrategy();
-
         var hs = (ICommand)hardStopStrategy.RunStrategy(key);
-
-        hs.Execute();       
+        hs.Execute();
     }
 
     [Fact]
@@ -69,45 +62,126 @@ public class ServerThreadTests
         var createAndStartFlag = false;
         var hsFlag = false;
 
-        var key = 1;
-        
-        var mre = new ManualResetEvent(false);
+        var key = 2;
 
-        IStrategy createAndStartSTStrategy = new CreateAndStartServerThreadStrategy();
-        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key, () => {
+        var are = new AutoResetEvent(true);
+
+        var createAndStartSTStrategy = new CreateAndStartServerThreadStrategy();
+        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key, () =>
+        {
             createAndStartFlag = true;
+            are.WaitOne();
         });
         c.Execute();
 
         var sendStrategy = new SendCommandStrategy();
-
         var c1 = (ICommand)sendStrategy.RunStrategy(key, new ActionCommand(() =>
         {
             isActive = true;
-            mre.Set();
+            are.WaitOne();
         }));
-
         c1.Execute();
+        are.Set();
 
-        mre.WaitOne();
+        Thread.Sleep(1000);
 
         Assert.True(isActive);
         Assert.True(mapServerThreads.TryGetValue(key, out ServerThread? st));
         Assert.True(mapServerThreadsSenders.TryGetValue(key, out ISender? s));
         Assert.True(createAndStartFlag);
 
+        var hardStopStrategy = new HardStopServerThreadStrategy();
+        var hs = (ICommand)hardStopStrategy.RunStrategy(key, () =>
+        {
+            hsFlag = true;
+            are.WaitOne();
+        });
+        hs.Execute();
+        are.Set();
+
+        Thread.Sleep(1000);
+
+        Assert.True(hsFlag);
+    }
+
+    [Fact]
+    public void ServerThreadGetHashCodeTest()
+    {
+        var queue1 = new BlockingCollection<ICommand>();
+        var serverThread1 = new ServerThread(new IReceiverAdapter(queue1));
+        var queue2 = new BlockingCollection<ICommand>();
+        var serverThread2 = new ServerThread(new IReceiverAdapter(queue2));
+        Assert.True(serverThread1.GetHashCode() != serverThread2.GetHashCode());
+    }
+
+    [Fact]
+    public void ServerThreadEqualsIsNotThreadTest()
+    {
+        var queue1 = new BlockingCollection<ICommand>();
+        var serverThread1 = new ServerThread(new IReceiverAdapter(queue1));
+        Assert.False(serverThread1.Equals(2));
+    }
+
+    [Fact]
+    public void ServerThreadEqualsTest()
+    {
+        var queue1 = new BlockingCollection<ICommand>();
+        var serverThread1 = new ServerThread(new IReceiverAdapter(queue1));
+        Assert.False(serverThread1.Equals(Thread.CurrentThread));
+    }
+
+    [Fact]
+    public void ServerThreadOperatorEqualsTest()
+    {
+        var queue1 = new BlockingCollection<ICommand>();
+        var serverThread1 = new ServerThread(new IReceiverAdapter(queue1));
+        Assert.True(serverThread1 != Thread.CurrentThread);
+    }
+
+    [Fact]
+    public void FindHandlerExceptionForServerThread()
+    {
+        var handleFlag = false;
+
+        var key = 11;
+        var are = new AutoResetEvent(true);
+
+        var createAndStartSTStrategy = new CreateAndStartServerThreadStrategy();
+
+        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key, () =>
+        {
+            are.WaitOne();
+        });
+
+        c.Execute();
+
+        var sendStrategy = new SendCommandStrategy();
+
+        var c1 = (ICommand)sendStrategy.RunStrategy(key, new ActionCommand(() =>
+        {
+            new InitScopeBasedIoCImplementationCommand().Execute();
+            IoC.Resolve<Hwdtech.ICommand>("Scopes.Current.Set", IoC.Resolve<object>("Scopes.New", IoC.Resolve<object>("Scopes.Root"))).Execute();
+
+            var handler = new Mock<IHandler>();
+            handler.Setup(c => c.Handle()).Callback(() => are.WaitOne());
+
+            IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "GetExceptionHandler", (object[] args) => handler.Object).Execute();
+
+            handleFlag = true;
+            throw new Exception();
+        }));
+
+        c1.Execute();
+
+        are.Set();
+        Thread.Sleep(1000);
+
+        Assert.True(handleFlag);
 
         var hardStopStrategy = new HardStopServerThreadStrategy();
 
-        var hs = (ICommand)hardStopStrategy.RunStrategy(key, () => {
-            hsFlag = true;
-            mre.WaitOne();
-        });
+        var hs = (ICommand)hardStopStrategy.RunStrategy(key);
 
-        hs.Execute();   
-
-        output.WriteLine($"{hsFlag}");
-
-        Assert.True(hsFlag);
+        hs.Execute();
     }
 }

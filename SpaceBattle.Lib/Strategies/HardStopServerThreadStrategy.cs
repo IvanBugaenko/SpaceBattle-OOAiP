@@ -15,7 +15,10 @@ public class HardStopServerThreadStrategy : IStrategy
             action = (Action)args[1];
         }
 
-        var cmd = new HardStopServerThreadCommand(id);
+        if (!IoC.Resolve<ConcurrentDictionary<int, ServerThread>>("GetServrerThreads").TryGetValue(id, out ServerThread? serverThread))
+            throw new Exception();
+
+        var cmd = new HardStopServerThreadCommand(serverThread);
 
         return new SendCommand(id, new ActionCommand(() => 
         {

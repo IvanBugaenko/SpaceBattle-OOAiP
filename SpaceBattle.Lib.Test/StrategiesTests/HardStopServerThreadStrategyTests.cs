@@ -4,12 +4,12 @@ using System.Collections.Concurrent;
 
 namespace SpaceBattle.Lib.Test;
 
-public class SendCommandTests
+public class HardStopServerThreadStrategyTests
 {
     ConcurrentDictionary<int, ServerThread> mapServerThreads = new ConcurrentDictionary<int, ServerThread>();
     ConcurrentDictionary<int, ISender> mapServerThreadsSenders = new ConcurrentDictionary<int, ISender>();
 
-    public SendCommandTests()
+    public HardStopServerThreadStrategyTests()
     {
         new InitScopeBasedIoCImplementationCommand().Execute();
         IoC.Resolve<Hwdtech.ICommand>("Scopes.Current.Set", IoC.Resolve<object>("Scopes.New", IoC.Resolve<object>("Scopes.Root"))).Execute();
@@ -19,34 +19,22 @@ public class SendCommandTests
     }
 
     [Fact]
-    public void UnsuccessfulSendCommandExecuteThrowsException()
+    public void UnsuccessfulHardStopServerThreadStrategyThrowsExceptionBecauseFalseKeyInRunStratehyCondition()
     {
         var key = 1;
         var falseKey = 2;
 
-        var are = new AutoResetEvent(true);
-
         var createAndStartSTStrategy = new CreateAndStartServerThreadStrategy();
-        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key, () =>
-        {
-            are.WaitOne();
-        });
+        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key);
         c.Execute();
 
-        var sendStrategy = new SendCommandStrategy();
-        var c1 = (ICommand)sendStrategy.RunStrategy(falseKey, new ActionCommand(() =>
-        {
-            are.WaitOne();
-        }));
+        var hardStopStrategy = new HardStopServerThreadStrategy();
 
         Assert.Throws<Exception>(() =>
         {
-            c1.Execute();
-            are.Set();
-            Thread.Sleep(1000);
+            var hs = (ICommand)hardStopStrategy.RunStrategy(falseKey);
         });
 
-        var hardStopStrategy = new HardStopServerThreadStrategy();
         var hs = (ICommand)hardStopStrategy.RunStrategy(key);
         hs.Execute();
     }

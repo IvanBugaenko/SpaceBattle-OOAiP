@@ -25,22 +25,23 @@ public class SoftStopServerThreadCommandTests
 
         var ssFlag = false;
 
-        var are = new AutoResetEvent(true);
+        var are = new AutoResetEvent(false);
 
         var createAndStartSTStrategy = new CreateAndStartServerThreadStrategy();
-
-        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key, () =>
-        {
-            are.WaitOne();
-        });
+        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key);
         c.Execute();
 
         var serverThread = mapServerThreads[key];
         var ss = new SoftStopServerThreadCommand(serverThread, () => { 
             ssFlag = true; 
+            are.Set();
         });
 
-        Assert.Throws<Exception>(() => ss.Execute());
+        Assert.Throws<Exception>(() => {
+            ss.Execute();
+            are.WaitOne();
+        });
+
         Assert.False(ssFlag);
 
         var hardStopStrategy = new HardStopServerThreadStrategy();
@@ -72,12 +73,10 @@ public class SoftStopServerThreadCommandTests
         var c2 = (ICommand)sendStrategy.RunStrategy(key, new ActionCommand(() =>
         {
             isExecute = true;
-            are.WaitOne();
+            are.Set();
         }));
         c2.Execute();
-        are.Set();
-
-        Thread.Sleep(1000);
+        are.WaitOne();
 
         Assert.True(isExecute);
     }

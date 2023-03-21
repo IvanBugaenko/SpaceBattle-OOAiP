@@ -26,25 +26,21 @@ public class ServerThreadTests
 
         var key = 1;
 
-        var are = new AutoResetEvent(true);
+        var are = new AutoResetEvent(false);
 
         var createAndStartSTStrategy = new CreateAndStartServerThreadStrategy();
-        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key, () =>
-        {
-            are.WaitOne();
-        });
+        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key);
         c.Execute();
 
         var sendStrategy = new SendCommandStrategy();
         var c1 = (ICommand)sendStrategy.RunStrategy(key, new ActionCommand(() =>
         {
             isActive = true;
-            are.WaitOne();
+            are.Set();
         }));
         c1.Execute();
-        are.Set();
 
-        Thread.Sleep(1000);
+        are.WaitOne();
 
         Assert.True(isActive);
         Assert.True(mapServerThreads.TryGetValue(key, out ServerThread? st));
@@ -64,13 +60,12 @@ public class ServerThreadTests
 
         var key = 2;
 
-        var are = new AutoResetEvent(true);
+        var are = new AutoResetEvent(false);
 
         var createAndStartSTStrategy = new CreateAndStartServerThreadStrategy();
         var c = (ICommand)createAndStartSTStrategy.RunStrategy(key, () =>
         {
             createAndStartFlag = true;
-            are.WaitOne();
         });
         c.Execute();
 
@@ -78,12 +73,11 @@ public class ServerThreadTests
         var c1 = (ICommand)sendStrategy.RunStrategy(key, new ActionCommand(() =>
         {
             isActive = true;
-            are.WaitOne();
+            are.Set();
         }));
         c1.Execute();
-        are.Set();
 
-        Thread.Sleep(1000);
+        are.WaitOne();
 
         Assert.True(isActive);
         Assert.True(mapServerThreads.TryGetValue(key, out ServerThread? st));
@@ -94,12 +88,10 @@ public class ServerThreadTests
         var hs = (ICommand)hardStopStrategy.RunStrategy(key, () =>
         {
             hsFlag = true;
-            are.WaitOne();
+            are.Set();
         });
         hs.Execute();
-        are.Set();
-
-        Thread.Sleep(1000);
+        are.WaitOne();
 
         Assert.True(hsFlag);
     }
@@ -144,15 +136,10 @@ public class ServerThreadTests
         var handleFlag = false;
 
         var key = 11;
-        var are = new AutoResetEvent(true);
+        var are = new AutoResetEvent(false);
 
         var createAndStartSTStrategy = new CreateAndStartServerThreadStrategy();
-
-        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key, () =>
-        {
-            are.WaitOne();
-        });
-
+        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key);
         c.Execute();
 
         var sendStrategy = new SendCommandStrategy();
@@ -163,7 +150,7 @@ public class ServerThreadTests
             IoC.Resolve<Hwdtech.ICommand>("Scopes.Current.Set", IoC.Resolve<object>("Scopes.New", IoC.Resolve<object>("Scopes.Root"))).Execute();
 
             var handler = new Mock<IHandler>();
-            handler.Setup(c => c.Handle()).Callback(() => are.WaitOne());
+            handler.Setup(c => c.Handle()).Callback(() => are.Set());
 
             IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "GetExceptionHandler", (object[] args) => handler.Object).Execute();
 
@@ -173,8 +160,7 @@ public class ServerThreadTests
 
         c1.Execute();
 
-        are.Set();
-        Thread.Sleep(1000);
+        are.WaitOne();
 
         Assert.True(handleFlag);
 

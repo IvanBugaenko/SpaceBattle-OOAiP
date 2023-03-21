@@ -64,7 +64,10 @@ public class SoftStopServerThreadCommandTests
         var softStopStrategy = new SoftStopServerThreadStrategy();
         var sendStrategy = new SendCommandStrategy();
 
-        var ss = (ICommand)softStopStrategy.RunStrategy(key);
+        var ss = (ICommand)softStopStrategy.RunStrategy(key, () => 
+        {
+            are.Set();
+        });
         ss.Execute();
 
         var c2 = (ICommand)sendStrategy.RunStrategy(key, new ActionCommand(() =>
@@ -73,6 +76,7 @@ public class SoftStopServerThreadCommandTests
             are.Set();
         }));
         c2.Execute();
+        are.WaitOne();
         are.WaitOne();
 
         Assert.True(isExecute);

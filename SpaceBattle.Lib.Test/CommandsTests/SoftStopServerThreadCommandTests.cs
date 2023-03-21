@@ -55,13 +55,10 @@ public class SoftStopServerThreadCommandTests
         var key = 4;
         var isExecute = false;
 
-        var are = new AutoResetEvent(true);
+        var are = new AutoResetEvent(false);
 
         var createAndStartSTStrategy = new CreateAndStartServerThreadStrategy();
-        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key, () =>
-        {
-            are.WaitOne();
-        });
+        var c = (ICommand)createAndStartSTStrategy.RunStrategy(key);
         c.Execute();
         
         var softStopStrategy = new SoftStopServerThreadStrategy();

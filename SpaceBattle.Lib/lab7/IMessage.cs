@@ -12,7 +12,7 @@ public interface IMessage
         get;
     }
 
-    public int Target
+    public int GameItemID
     {
         get;
     }

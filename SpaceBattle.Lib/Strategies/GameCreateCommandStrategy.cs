@@ -8,12 +8,11 @@ public class GameCreateCommandStrategy : IStrategy
         var message = (IMessage)args[0];
 
         var orderType = message.OrderType;
-        var gameID = message.GameID;
         var gameItemID = message.GameItemID;
 
         var props = message.Properties;
 
-        var obj = IoC.Resolve<IUObject>("GetUObjectFromObjectMap", gameItemID);
+        var obj = IoC.Resolve<IUObject>("GetUObjectFromUObjectMap", gameItemID);
 
         props.ToList().ForEach(p => IoC.Resolve<ICommand>("GameUObjectSetProperty", obj, p.Key, p.Value).Execute());
 

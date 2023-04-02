@@ -14,6 +14,8 @@ public class InterpretingCommand: ICommand
     {
         var cmd = IoC.Resolve<ICommand>("Game.CreateCommand", message);
 
-        IoC.Resolve<ICommand>("Game.Queue.Push", IoC.Resolve<Queue<ICommand>>("Game.Queue"), cmd).Execute();
+        var id = message.GameID;
+
+        IoC.Resolve<ICommand>("Game.Queue.Push", id, cmd).Execute();
     }
 }

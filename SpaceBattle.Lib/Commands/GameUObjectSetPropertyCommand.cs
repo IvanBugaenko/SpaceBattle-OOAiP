@@ -2,9 +2,9 @@ namespace SpaceBattle.Lib;
 
 public class GameUObjectSetPropertyCommand: ICommand
 {
-    IUObject obj;
-    string key;
-    object value;
+    private IUObject obj;
+    private string key;
+    private object value;
 
     public GameUObjectSetPropertyCommand(IUObject obj, string key, object value)
     {

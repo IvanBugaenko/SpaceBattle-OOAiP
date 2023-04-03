@@ -3,8 +3,8 @@ namespace SpaceBattle.Lib;
 
 public class GameQueuePushCommand: ICommand
 {
-    int id;
-    ICommand cmd;
+    private int id;
+    private ICommand cmd;
 
     public GameQueuePushCommand(int id, ICommand cmd)
     {

@@ -3,7 +3,7 @@ namespace SpaceBattle.Lib;
 
 public class InterpretingCommand: ICommand
 {
-    IMessage message;
+    private IMessage message;
 
     public InterpretingCommand(IMessage message)
     {

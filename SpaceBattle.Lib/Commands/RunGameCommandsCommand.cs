@@ -7,12 +7,10 @@ namespace SpaceBattle.Lib;
 public class RunGameCommandsCommand : ICommand
 {
     private Queue<ICommand> queue;
-    private double quantum;
 
-    public RunGameCommandsCommand(Queue<ICommand> queue, double quantum)
+    public RunGameCommandsCommand(Queue<ICommand> queue)
     {
         this.queue = queue;
-        this.quantum = quantum;
     }
 
     public void Execute()
@@ -21,7 +19,7 @@ public class RunGameCommandsCommand : ICommand
 
         stopWatch.Start();
 
-        while (stopWatch.Elapsed.TotalMilliseconds <= this.quantum)
+        while (stopWatch.Elapsed.TotalMilliseconds < IoC.Resolve<double>("Game.GetQuantumOfTime"))
         {
             var cmd = IoC.Resolve<ICommand>("Game.Queue.GetCommand", queue);
 

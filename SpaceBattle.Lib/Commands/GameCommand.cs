@@ -17,9 +17,7 @@ public class GameCommand : ICommand
     public void Execute()
     {
         IoC.Resolve<Hwdtech.ICommand>("Scopes.Current.Set", this.scope).Execute();
-
-        var q = IoC.Resolve<double>("Game.GetQuantumOfTime");
         
-        IoC.Resolve<ICommand>("Game.RunCommands", this.queue, q).Execute();
+        IoC.Resolve<ICommand>("Game.RunCommands", this.queue).Execute();
     }
 }

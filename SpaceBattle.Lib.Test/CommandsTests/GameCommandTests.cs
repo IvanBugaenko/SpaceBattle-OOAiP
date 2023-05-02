@@ -11,7 +11,6 @@ public class GameCommandTests
     public void SuccessfulGameCommandExecute()
     {
         new InitScopeBasedIoCImplementationCommand().Execute();
-
         var scope = IoC.Resolve<object>("Scopes.New", IoC.Resolve<object>("Scopes.Root"));
         IoC.Resolve<Hwdtech.ICommand>("Scopes.Current.Set", scope).Execute();
 
@@ -21,13 +20,9 @@ public class GameCommandTests
         cmd.Setup(c => c.Execute()).Callback(() => {}).Verifiable();
 
         var runCommandsStrategy = new Mock<IStrategy>();
-        runCommandsStrategy.Setup(s => s.RunStrategy(It.IsAny<Queue<ICommand>>(), It.IsAny<double>())).Returns(cmd.Object).Verifiable();
-
-        var getQuantumOfTimeStrategy = new Mock<IStrategy>();
-        getQuantumOfTimeStrategy.Setup(s => s.RunStrategy()).Returns(1.1).Verifiable();
+        runCommandsStrategy.Setup(s => s.RunStrategy(It.IsAny<Queue<ICommand>>())).Returns(cmd.Object).Verifiable();
 
         IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.RunCommands", (object[] args) => runCommandsStrategy.Object.RunStrategy(args)).Execute();
-        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.GetQuantumOfTime", (object[] args) => getQuantumOfTimeStrategy.Object.RunStrategy(args)).Execute();
 
         var game = new GameCommand(queue, scope);
 
@@ -39,6 +34,5 @@ public class GameCommandTests
         Assert.True(scope == IoC.Resolve<object>("Scopes.Current"));
         cmd.VerifyAll();
         runCommandsStrategy.VerifyAll();
-        getQuantumOfTimeStrategy.VerifyAll();
     }
 }

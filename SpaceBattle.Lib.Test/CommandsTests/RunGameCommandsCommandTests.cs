@@ -56,7 +56,6 @@ public class RunGameCommandsCommandTests
 
         runGameCommandsCommand.Execute();
 
-        // Assert.Throws<Exception>(() => );
         handler.VerifyAll();
     }
 }

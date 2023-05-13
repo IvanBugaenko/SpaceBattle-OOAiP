@@ -1,4 +1,5 @@
 using Hwdtech;
+using Hwdtech.Ioc;
 
 namespace SpaceBattle.Lib;
 
@@ -14,7 +15,7 @@ public class CreateRuleInitializationCommandStrategy : IStrategy
         return new ActionCommand(() => {
             rules.ToList().ForEach(rule => 
                 IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.CreateCommand." + rule, 
-                    (object[] args) => strategyMap[rule].RunStrategy(args)));
+                    (object[] args) => strategyMap[rule].RunStrategy(args)).Execute());
         });
     }
 }

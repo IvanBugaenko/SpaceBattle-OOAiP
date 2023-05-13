@@ -13,6 +13,6 @@ public class GameRuleRegistrationCommand : ICommand
     public void Execute()
     {
         var cmd = IoC.Resolve<ICommand>("Thread.Command.Create.Rule.Initialization");
-        IoC.Resolve<ICommand>("Game.Queue.Push", gameID, cmd).Execute();
+        IoC.Resolve<ICommand>("Game.Queue.Push.ByID", gameID, cmd).Execute();
     }
 }

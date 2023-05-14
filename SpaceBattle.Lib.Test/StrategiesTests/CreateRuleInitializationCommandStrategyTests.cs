@@ -5,45 +5,47 @@ using Hwdtech.Ioc;
 namespace SpaceBattle.Lib.Test;
 
 
-public class CreateRuleInitializationCommandStrategyTest
+public class RegisteringCreatingOperationsStrategyTest
 {
     [Fact]
-    public void SuccessfulCreateRuleInitializationCommandStrategyRunStrategy()
+    public void SuccessfulRegisteringCreatingOperationStrategyRunStrategy()
     {
         new InitScopeBasedIoCImplementationCommand().Execute();
         IoC.Resolve<Hwdtech.ICommand>("Scopes.Current.Set", IoC.Resolve<object>("Scopes.New", IoC.Resolve<object>("Scopes.Root"))).Execute();
 
-        var rulesList = new List<string>(){
-            "Rotate"
+        var ruleList = new List<string>(){
+            "Check"
         };
 
-        var getGameRulesStrategy = new Mock<IStrategy>();
-        getGameRulesStrategy.Setup(s => s.RunStrategy()).Returns(rulesList).Verifiable();
+        var ruleListStrategy = new Mock<IStrategy>();
+        ruleListStrategy.Setup(s => s.RunStrategy()).Returns(ruleList);
 
-        var strategyMap = new Dictionary<string, IStrategy>()
-        {
-            {"Rotate", new CreateRotateCommandStrategy()},
-            {"Shoot", new CreateShootCommandStrategy()}
-        };
+        var checkCommand = new Mock<ICommand>();
+        checkCommand.Setup(c => c.Execute()).Callback(() => {}).Verifiable();
 
-        var getStrategyMapStrategy = new Mock<IStrategy>();
-        getStrategyMapStrategy.Setup(s => s.RunStrategy()).Returns(strategyMap).Verifiable();
+        var checkCommandStrategy = new Mock<IStrategy>();
+        checkCommandStrategy.Setup(s => s.RunStrategy(It.IsAny<IUObject>())).Returns(checkCommand.Object);
+        
+        
+        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Rules.Get.Rotate", (object[] args) => ruleListStrategy.Object.RunStrategy(args)).Execute();
+        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Command.Check", (object[] args) => checkCommandStrategy.Object.RunStrategy(args)).Execute();
+        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Command.Macro.Create", (object[] args) => new MacroCommand(new List<ICommand>(){checkCommand.Object})).Execute();
 
-        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Rules.Get", (object[] args) => getGameRulesStrategy.Object.RunStrategy(args)).Execute();
-        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Base.Strategies.Get", (object[] args) => getStrategyMapStrategy.Object.RunStrategy(args)).Execute();
-
-        var strategy = new CreateRuleInitializationCommandStrategy();
+        var strategy = new RegisteringCreatingOperationStrategy();
         var actionCommand = (ICommand)strategy.RunStrategy();
 
         Assert.IsType<ActionCommand>(actionCommand);
 
         actionCommand.Execute();
 
-        getStrategyMapStrategy.Verify();
-        getGameRulesStrategy.Verify();
+        var obj = new Mock<IUObject>();
 
-        var rotatable = new Mock<IRotatable>();
+        var result = IoC.Resolve<ICommand>("Game.Operations.Create", obj.Object, "Rotate");
 
-        Assert.IsType<RotateCommand>(IoC.Resolve<ICommand>("Game.CreateCommand.Rotate", rotatable.Object));
+        Assert.IsType<MacroCommand>(result);
+
+        result.Execute();
+
+        checkCommand.VerifyAll();
     }
 }

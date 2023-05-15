@@ -5,10 +5,10 @@ using Hwdtech.Ioc;
 namespace SpaceBattle.Lib.Test;
 
 
-public class GameRuleRegistrationCommandTests
+public class GameOperationsRegistrationCommandTests
 {
     [Fact]
-    public void SuccessfulGameRuleRegistrationCommandExecute()
+    public void SuccessfulGameOperationsRegistrationCommandExecute()
     {
         new InitScopeBasedIoCImplementationCommand().Execute();
         IoC.Resolve<Hwdtech.ICommand>("Scopes.Current.Set", IoC.Resolve<object>("Scopes.New", IoC.Resolve<object>("Scopes.Root"))).Execute();
@@ -27,12 +27,12 @@ public class GameRuleRegistrationCommandTests
         var pushStrategy = new Mock<IStrategy>();
         pushStrategy.Setup(s => s.RunStrategy(It.IsAny<int>(), It.IsAny<ICommand>())).Returns(pushCommand.Object).Verifiable();
         
-        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Thread.Command.Create.Rule.Initialization", (object[] args) => getStrategy.Object.RunStrategy(args)).Execute();
+        IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Thread.Games.Operations.Registration", (object[] args) => getStrategy.Object.RunStrategy(args)).Execute();
         IoC.Resolve<Hwdtech.ICommand>("IoC.Register", "Game.Queue.Push.ByID", (object[] args) => pushStrategy.Object.RunStrategy(args)).Execute();
 
         var id = 1;
 
-        var gameRuleRegistrationCommand = new GameRuleRegistrationCommand(id);
+        var gameRuleRegistrationCommand = new GameOperationsRegistrationCommand(id);
 
         gameRuleRegistrationCommand.Execute();
 

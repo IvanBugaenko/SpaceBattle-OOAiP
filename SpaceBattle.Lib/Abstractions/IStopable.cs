@@ -2,11 +2,12 @@ namespace SpaceBattle.Lib;
 
 public interface IStopable
 {
-    IEnumerable<string> Properties
+    public IEnumerable<string> Properties
     {
         get;
     }
-    IUObject Target
+    
+    public IUObject Target
     {
         get;
     }

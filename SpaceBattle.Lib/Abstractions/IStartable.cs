@@ -2,11 +2,12 @@ namespace SpaceBattle.Lib;
 
 public interface IStartable
 {
-    IUObject Target
+    public IUObject Target
     {
         get;
     }
-    IDictionary<string, object> Properties
+    
+    public IDictionary<string, object> Properties
     {
         get;
     }

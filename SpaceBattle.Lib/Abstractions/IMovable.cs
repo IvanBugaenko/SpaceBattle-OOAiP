@@ -2,11 +2,12 @@ namespace SpaceBattle.Lib;
 
 public interface IMovable
 {
-    Vector Speed
+    public Vector Speed
     {
         get;
     }
-    Vector Pos
+    
+    public Vector Pos
     {
         get;
         set;

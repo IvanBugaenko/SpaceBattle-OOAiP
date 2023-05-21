@@ -11,6 +11,7 @@
     <PackageReference Include="Hwdtech.IoC" Version="1.0.0" />
     <PackageReference Include="Hwdtech.Ioc.ScopeBasedIoCImplementation" Version="1.0.0" />
     <PackageReference Include="Hwdtech.Ioc.SingleThreadScope" Version="1.0.0" />
+    <PackageReference Include="scriban" Version="5.7.0" />
   </ItemGroup>
 
 </Project>
